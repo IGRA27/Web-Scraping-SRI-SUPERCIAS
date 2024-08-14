@@ -1,7 +1,7 @@
 import os
 import tempfile
 import requests
-import pytesseract
+import pytesseract #Instalar, y agregar al PATH de las variables del sistema.
 import cv2
 import re
 from selenium.webdriver.common.by import By
