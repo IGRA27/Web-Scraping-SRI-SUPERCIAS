@@ -1,0 +1,9 @@
+# Ignorar todos los archivos JSON de ser necesario, o si se quiere ver no incluir
+*.json
+
+# Ignorar directorios __pycache__
+__pycache__/
+
+# Ignorar todos los archivos JSON de ser necesario, o si se quiere ver no incluir
+*.jpg
+*.png
