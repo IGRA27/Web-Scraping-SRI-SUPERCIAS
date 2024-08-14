@@ -1,0 +1,36 @@
+{
+    "ruc": "1791754689001",
+    "informacion_general": {
+        "expediente": "89971",
+        "ruc": "1791754689001",
+        "fecha_constitucion": "2000-10-12",
+        "nacionalidad": "ECUADOR",
+        "plazo_social": "2050-10-12",
+        "oficina_control": "QUITO",
+        "tipo_compania": "RESPONSABILIDAD LIMITADA",
+        "situacion_legal": "ACTIVA"
+    },
+    "actividad_economica": {
+        "objeto_social": "Asesoría, desarrollo y administración de sistemas y programas de computación y software general, software financiero, entre otros; y su comercialización dentro y fuera del país; así como la administración de aplicaciones o plataformas tecnológicas que soportan las operaciones financieras determinadas en el Código Orgánico Monetario y Financiero y la normativa vigente",
+        "ciiu_actividad_nivel_2": "J62",
+        "descripcion_actividad": "PROGRAMACIÓN INFORMÁTICA, CONSULTORÍA DE INFORMÁTICA Y ACTIVIDADES CONEXAS."
+    },
+    "accionistas": [
+        {
+            "identificacion": "1802281822",
+            "nombre": "ALTAMIRANO GAVILANES JOSE GEOVANNY",
+            "nacionalidad": "ECUADOR",
+            "tipo_inversion": "NACIONAL",
+            "capital": "22,718.0000",
+            "restriccion": "N"
+        },
+        {
+            "identificacion": "1714153952",
+            "nombre": "BAYAS EGAS MAURICIO JOSE",
+            "nacionalidad": "ECUADOR",
+            "tipo_inversion": "NACIONAL",
+            "capital": "241,432.0000",
+            "restriccion": "N"
+        }
+    ]
+}
