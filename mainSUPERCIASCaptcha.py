@@ -94,6 +94,26 @@ def ingresar_ruc(driver, ruc):
                     raise Exception("No se pudo ingresar el RUC correctamente después de varios intentos.")
             input_ruc.send_keys(Keys.RETURN)
 
+
+            # Verificar si el mensaje de "RUC no encontrado" aparece
+            try:
+                mensaje_error = WebDriverWait(driver, 4).until(
+                    EC.any_of(
+                        EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/ul/li/span")),
+                        EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/span/ul/li/span"))
+                    )
+                )
+                if mensaje_error:
+                    # Extraer el texto del mensaje y devolverlo como respuesta JSON
+                    mensaje_texto = mensaje_error.text
+                    with open(f'{ruc}_error.json', 'w', encoding='utf-8') as f:
+                        json.dump({"error": "No existe ninguna compañía cuyo R.U.C. coincida con el parámetro ingresado"}, f, ensure_ascii=False, indent=4)
+                    print(f"Error: {mensaje_texto}. Guardado en {ruc}_error.json")
+                    return False
+                
+            except Exception:
+                pass  # Si no aparece el mensaje de error, continuar con el proceso
+
             # Resolver el CAPTCHA automáticamente
             time.sleep(5)
             captcha_resuelto = resolver_captcha(driver, "//img[@id='frmBusquedaCompanias:captchaImage']")
@@ -106,6 +126,7 @@ def ingresar_ruc(driver, ruc):
             print(f"Error en ingresar_ruc: {e}. Reintentando...")
             if retries == 0:
                 raise e
+            
 
 def manejar_captcha(driver, xpath_captcha, xpath_boton_verificar):
     """Intentar resolver el CAPTCHA, si aparece."""
@@ -122,6 +143,7 @@ def manejar_captcha(driver, xpath_captcha, xpath_boton_verificar):
 
 def navegar_y_consultar_ruc(driver, ruc):
     url = 'https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf'
+    # si no funciona ese link probar:https://appscvssoc.supercias.gob.ec/consultaCompanias/societario/informacionCompanias.jsf 
 
     if not verificar_disponibilidad_pagina(driver, url):
         # Si la página no está disponible, devuelve un JSON indicando el estado
@@ -130,6 +152,10 @@ def navegar_y_consultar_ruc(driver, ruc):
         print(f"Página no disponible. Error guardado en {ruc}_error.json")
         return
     
+    #RUC no valido
+    #if not ingresar_ruc(driver, ruc):
+    #    return False
+
     try:
         # Esperar a que el elemento sea visible e interactuable
         WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:tipoBusqueda']/tbody/tr/td[2]/label")))
@@ -151,6 +177,9 @@ def navegar_y_consultar_ruc(driver, ruc):
         time.sleep(4)  # Esperar un momento adicional para asegurar que todo cargue correctamente
     except Exception as e:
         print(f"Error al navegar y consultar RUC: {e}")
+        #returns agregados para validar RUC
+        return False
+    return True
 
 # EXTRACCIÓN DE INFORMACIÓN GENERAL
 def extraer_informacion_general(driver):
@@ -226,7 +255,11 @@ def main(ruc):
     driver = configure_browsersupercias(headless=False) #True si no se quiere abrir el driver del chrome
     
     try:
-        navegar_y_consultar_ruc(driver, ruc)
+        if not navegar_y_consultar_ruc(driver, ruc):
+            # Si el RUC no se encontró, simplemente retornamos ya que el error JSON ya se generó
+            return
+        
+        #navegar_y_consultar_ruc(driver, ruc) REEMPLAZADO POR IF NOT
         informacion_general = extraer_informacion_general(driver)
         actividad_economica = extraer_actividad_economica(driver)
         accionistas = extraer_datos_accionistas(driver)
