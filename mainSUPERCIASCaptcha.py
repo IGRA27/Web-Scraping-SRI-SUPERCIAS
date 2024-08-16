@@ -97,16 +97,19 @@ def ingresar_ruc(driver, ruc):
 
             # Verificar si el mensaje de "RUC no encontrado" aparece
             try:
-                mensaje_error_1 = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/ul/li/span")))
-                mensaje_error_2 = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/span/ul/li/span")))
-                
-                if mensaje_error_1 or mensaje_error_2:
+                mensaje_error = WebDriverWait(driver, 4).until(
+                    EC.any_of(
+                        EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/ul/li/span")),
+                        EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/span/ul/li/span"))
+                    )
+                )
+                if mensaje_error:
                     # Extraer el texto del mensaje y devolverlo como respuesta JSON
-                    mensaje_texto = (mensaje_error_1 or mensaje_error_2).text
+                    mensaje_texto = mensaje_error.text
                     with open(f'{ruc}_error.json', 'w', encoding='utf-8') as f:
-                        json.dump({"error": mensaje_texto}, f, ensure_ascii=False, indent=4)
+                        json.dump({"error": "No existe ninguna compañía cuyo R.U.C. coincida con el parámetro ingresado"}, f, ensure_ascii=False, indent=4)
                     print(f"Error: {mensaje_texto}. Guardado en {ruc}_error.json")
-                    return False  # Indicar que el RUC no fue encontrado
+                    return False
                 
             except Exception:
                 pass  # Si no aparece el mensaje de error, continuar con el proceso
