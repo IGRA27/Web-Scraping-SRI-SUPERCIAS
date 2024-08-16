@@ -95,16 +95,21 @@ def ingresar_ruc(driver, ruc):
             input_ruc.send_keys(Keys.RETURN)
 
 
-            #Verificar si el mensaje de "RUC no encontrado" aparece
+            # Esperar hasta 4 segundos para verificar si aparece alguno de los mensajes de "RUC no encontrado"
             try:
-                mensaje_error = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/ul/li/span")))
+                mensaje_error = WebDriverWait(driver, 4).until(
+                    EC.any_of(
+                        EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/ul/li/span")),
+                        EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/span/ul/li/span"))
+                    )
+                )
                 if mensaje_error:
                     # Extraer el texto del mensaje y devolverlo como respuesta JSON
                     mensaje_texto = mensaje_error.text
                     with open(f'{ruc}_error.json', 'w', encoding='utf-8') as f:
-                        json.dump({"error": mensaje_texto}, f, ensure_ascii=False, indent=4)
+                        json.dump({"error": "No existe ninguna compañía cuyo R.U.C. coincida con el parámetro ingresado"}, f, ensure_ascii=False, indent=4)
                     print(f"Error: {mensaje_texto}. Guardado en {ruc}_error.json")
-                    return False  # Puedes usar este retorno para indicar que el RUC no fue encontrado
+                    return False  # Indicar que el RUC no fue encontrado
             except Exception:
                 pass  # Si no aparece el mensaje de error, continuar con el proceso
 
