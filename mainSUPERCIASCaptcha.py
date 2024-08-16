@@ -126,7 +126,7 @@ def ingresar_ruc(driver, ruc):
             print(f"Error en ingresar_ruc: {e}. Reintentando...")
             if retries == 0:
                 raise e
-    return True        
+            
 
 def manejar_captcha(driver, xpath_captcha, xpath_boton_verificar):
     """Intentar resolver el CAPTCHA, si aparece."""
@@ -153,8 +153,8 @@ def navegar_y_consultar_ruc(driver, ruc):
         return
     
     #RUC no valido
-    if not ingresar_ruc(driver, ruc):
-        return False
+    #if not ingresar_ruc(driver, ruc):
+    #    return False
 
     try:
         # Esperar a que el elemento sea visible e interactuable
@@ -162,7 +162,7 @@ def navegar_y_consultar_ruc(driver, ruc):
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='frmBusquedaCompanias:tipoBusqueda']/tbody/tr/td[2]/label"))).click()
         
         # Ingresar el RUC
-        #ingresar_ruc(driver, ruc)
+        ingresar_ruc(driver, ruc)
         
         time.sleep(3)  # Esperar un momento para que cargue el resultado
 
