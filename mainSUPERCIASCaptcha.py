@@ -95,21 +95,19 @@ def ingresar_ruc(driver, ruc):
             input_ruc.send_keys(Keys.RETURN)
 
 
-            # Esperar hasta 4 segundos para verificar si aparece alguno de los mensajes de "RUC no encontrado"
+            # Verificar si el mensaje de "RUC no encontrado" aparece
             try:
-                mensaje_error = WebDriverWait(driver, 4).until(
-                    EC.any_of(
-                        EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/ul/li/span")),
-                        EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/span/ul/li/span"))
-                    )
-                )
-                if mensaje_error:
+                mensaje_error_1 = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/ul/li/span")))
+                mensaje_error_2 = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/span/ul/li/span")))
+                
+                if mensaje_error_1 or mensaje_error_2:
                     # Extraer el texto del mensaje y devolverlo como respuesta JSON
-                    mensaje_texto = mensaje_error.text
+                    mensaje_texto = (mensaje_error_1 or mensaje_error_2).text
                     with open(f'{ruc}_error.json', 'w', encoding='utf-8') as f:
-                        json.dump({"error": "No existe ninguna compañía cuyo R.U.C. coincida con el parámetro ingresado"}, f, ensure_ascii=False, indent=4)
+                        json.dump({"error": mensaje_texto}, f, ensure_ascii=False, indent=4)
                     print(f"Error: {mensaje_texto}. Guardado en {ruc}_error.json")
                     return False  # Indicar que el RUC no fue encontrado
+                
             except Exception:
                 pass  # Si no aparece el mensaje de error, continuar con el proceso
 
@@ -151,13 +149,17 @@ def navegar_y_consultar_ruc(driver, ruc):
         print(f"Página no disponible. Error guardado en {ruc}_error.json")
         return
     
+    #RUC no valido
+    if not ingresar_ruc(driver, ruc):
+        return False
+
     try:
         # Esperar a que el elemento sea visible e interactuable
         WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:tipoBusqueda']/tbody/tr/td[2]/label")))
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='frmBusquedaCompanias:tipoBusqueda']/tbody/tr/td[2]/label"))).click()
         
         # Ingresar el RUC
-        ingresar_ruc(driver, ruc)
+        #ingresar_ruc(driver, ruc)
         
         time.sleep(3)  # Esperar un momento para que cargue el resultado
 
@@ -172,6 +174,9 @@ def navegar_y_consultar_ruc(driver, ruc):
         time.sleep(4)  # Esperar un momento adicional para asegurar que todo cargue correctamente
     except Exception as e:
         print(f"Error al navegar y consultar RUC: {e}")
+        #returns agregados para validar RUC
+        return False
+    return True
 
 # EXTRACCIÓN DE INFORMACIÓN GENERAL
 def extraer_informacion_general(driver):
@@ -247,7 +252,11 @@ def main(ruc):
     driver = configure_browsersupercias(headless=False) #True si no se quiere abrir el driver del chrome
     
     try:
-        navegar_y_consultar_ruc(driver, ruc)
+        if not navegar_y_consultar_ruc(driver, ruc):
+            # Si el RUC no se encontró, simplemente retornamos ya que el error JSON ya se generó
+            return
+        
+        #navegar_y_consultar_ruc(driver, ruc) REEMPLAZADO POR IF NOT
         informacion_general = extraer_informacion_general(driver)
         actividad_economica = extraer_actividad_economica(driver)
         accionistas = extraer_datos_accionistas(driver)
