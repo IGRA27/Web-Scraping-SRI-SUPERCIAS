@@ -5,22 +5,22 @@ import mainSRICaptcha as SRI
 app = Flask(__name__)
 
 @app.route('/consulta', methods=['POST'])
-def process_cedula():
+def process_ruc():
     # Leer los datos JSON desde el cuerpo de la solicitud
     data = request.get_json()
 
-    # Verificar que se haya recibido la clave "cedula"
-    if not data or 'cedula' not in data:
-        return jsonify({"error": "Falta la clave 'cedula' en el JSON"}), 400
+    # Verificar que se haya recibido la clave "ruc"
+    if not data or 'ruc' not in data:
+        return jsonify({"error": "Falta la clave 'ruc' en el JSON"}), 400
 
-    # Obtener el valor de "cedula"
-    cedula = data['cedula']
+    # Obtener el valor de "ruc"
+    ruc = data['ruc']
 
     # Llamar al script de Navegacion
     datos = {}
     datosSri = {}
-    datos = SC.main(cedula)
-    datosSri = SRI.fetch_ruc_status(cedula)
+    datos = SC.main(ruc)
+    datosSri = SRI.fetch_ruc_status(ruc)
     
     datos.update(datosSri)
 

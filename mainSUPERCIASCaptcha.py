@@ -122,6 +122,7 @@ def manejar_captcha(driver, xpath_captcha, xpath_boton_verificar):
 
 def navegar_y_consultar_ruc(driver, ruc):
     url = 'https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf'
+    # si no funciona ese link probar:https://appscvssoc.supercias.gob.ec/consultaCompanias/societario/informacionCompanias.jsf 
 
     if not verificar_disponibilidad_pagina(driver, url):
         # Si la página no está disponible, devuelve un JSON indicando el estado
