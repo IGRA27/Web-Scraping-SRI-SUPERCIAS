@@ -7,7 +7,7 @@ def configure_browser(headless=False):
     
     #IMPORTANTE
     # Aquí defines la ruta al perfil de Chrome
-    user_data_dir = r'C:\Users\Omaro\AppData\Local\Google\Chrome\User Data'  # Cambia esto a la ruta correcta
+    user_data_dir = r'C:\Users\Isaac\AppData\Local\Google\Chrome\User Data'  # Cambia esto a la ruta correcta
     options.add_argument(f"user-data-dir={user_data_dir}")  # Usa tu perfil de Chrome
     
     if headless:
