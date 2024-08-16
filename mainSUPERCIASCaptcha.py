@@ -94,6 +94,20 @@ def ingresar_ruc(driver, ruc):
                     raise Exception("No se pudo ingresar el RUC correctamente después de varios intentos.")
             input_ruc.send_keys(Keys.RETURN)
 
+
+            #Verificar si el mensaje de "RUC no encontrado" aparece
+            try:
+                mensaje_error = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='frmBusquedaCompanias:msgBusquedaCompanias']/div/ul/li/span")))
+                if mensaje_error:
+                    # Extraer el texto del mensaje y devolverlo como respuesta JSON
+                    mensaje_texto = mensaje_error.text
+                    with open(f'{ruc}_error.json', 'w', encoding='utf-8') as f:
+                        json.dump({"error": mensaje_texto}, f, ensure_ascii=False, indent=4)
+                    print(f"Error: {mensaje_texto}. Guardado en {ruc}_error.json")
+                    return False  # Puedes usar este retorno para indicar que el RUC no fue encontrado
+            except Exception:
+                pass  # Si no aparece el mensaje de error, continuar con el proceso
+
             # Resolver el CAPTCHA automáticamente
             time.sleep(5)
             captcha_resuelto = resolver_captcha(driver, "//img[@id='frmBusquedaCompanias:captchaImage']")
@@ -106,6 +120,7 @@ def ingresar_ruc(driver, ruc):
             print(f"Error en ingresar_ruc: {e}. Reintentando...")
             if retries == 0:
                 raise e
+    return True        
 
 def manejar_captcha(driver, xpath_captcha, xpath_boton_verificar):
     """Intentar resolver el CAPTCHA, si aparece."""
