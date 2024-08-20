@@ -17,12 +17,12 @@ def process_ruc():
     ruc = data['ruc']
 
     # Llamar al script de Navegacion
-    datos = {}
+    datosSC = {}
     datosSri = {}
-    datos = SC.main(ruc)
+    datosSC = SC.main(ruc)
     datosSri = SRI.fetch_ruc_status(ruc)
     
-    datos.update(datosSri)
+    datos = {"SRI":datosSri, "SUPERCIAS":datosSC}
 
     response = datos
 

@@ -33,6 +33,23 @@ def fetch_ruc_status(ruc_number):
 
         # Esperar unos segundos para que el botón se habilite
         time.sleep(3)
+
+        # Verificar si aparece alguno de los mensajes de error
+        try:
+            error_message_1 = driver.find_element(By.XPATH, '//*[@id="sribody"]/sri-root/div/div[2]/div/div/sri-consulta-ruc-web-app/div/sri-ruta-ruc/div[2]/div[1]/div[6]/div[2]/div/div[1]/div/div/p-messages/div/ul/li/span')
+            if error_message_1.is_displayed():
+                print("Mensaje de error encontrado.")
+                return {"error": error_message_1.text}
+        except:
+            pass
+        
+        try:
+            error_message_2 = driver.find_element(By.XPATH, '//*[@id="sribody"]/sri-root/div/div[2]/div/div/sri-consulta-ruc-web-app/div/sri-ruta-ruc/div[2]/div[1]/div[6]/div[2]/div/div[1]/div/div/div/sri-campo-ruc/form/div/div[3]/p-messages/div')
+            if error_message_2.is_displayed():
+                print("Mensaje de error encontrado.")
+                return {"error": error_message_2.text}
+        except:
+            pass
         
         # Esperar hasta que el botón de consulta esté habilitado
         consult_button = WebDriverWait(driver, 20).until(
